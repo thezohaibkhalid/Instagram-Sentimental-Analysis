@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sentiment Analysis Results</title>
+</head>
+<body>
+    <h1>Sentiment Analysis Results</h1>
+    <h2>Sentiment Distribution</h2>
+    <img src="{{ sentiment_plot }}" alt="Sentiment Plot">
+    <h2>Top Positive Words</h2>
+    {% if positive_words_plot %}
+        <img src="{{ positive_words_plot }}" alt="Positive Words Plot">
+    {% else %}
+        <p>No positive words found.</p>
+    {% endif %}
+    <h2>Top Negative Words</h2>
+    {% if negative_words_plot %}
+        <img src="{{ negative_words_plot }}" alt="Negative Words Plot">
+    {% else %}
+        <p>No negative words found.</p>
+    {% endif %}
+    <h2>Sentiment Distribution Data</h2>
+    <pre>{{ sentiment_distribution }}</pre>
+    <h2>Top Positive Words Data</h2>
+    <pre>{{ top_positive_words }}</pre>
+    <h2>Top Negative Words Data</h2>
+    <pre>{{ top_negative_words }}</pre>
+</body>
+</html>
