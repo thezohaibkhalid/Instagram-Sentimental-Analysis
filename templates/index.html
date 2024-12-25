@@ -1,20 +1,50 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Instagram Post Scraper</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instagram Scraper</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-    <h1>Instagram Post Scraper</h1>
-    <form method="POST">
-        <label for="username">Your Instagram Username:</label>
-        <input type="text" name="username" required><br>
-        <label for="password">Your Instagram Password:</label>
-        <input type="password" name="password" required><br>
-        <label for="target_username">Target Profile Username:</label>
-        <input type="text" name="target_username" required><br>
-        <label for="max_posts">Number of Posts:</label>
-        <input type="number" name="max_posts" value="10"><br>
-        <button type="submit">Fetch Posts</button>
-    </form>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+    <div class="bg-white p-8 rounded shadow-lg w-full max-w-md">
+        <h1 class="text-2xl font-bold text-gray-800 mb-6 text-center">Instagram Scraper</h1>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            <div class="mb-4">
+              {% for category, message in messages %}
+                <div class="text-{{ 'red' if category == 'error' else 'green' if category == 'success' else 'blue' }}-500">
+                  {{ message }}
+                </div>
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %}
+        <form method="POST" class="space-y-4">
+            <div>
+                <label for="username" class="block text-gray-600 font-medium">Instagram Username</label>
+                <input type="text" name="username" id="username" class="w-full mt-1 px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Your Instagram username" required>
+            </div>
+            <div>
+                <label for="password" class="block text-gray-600 font-medium">Instagram Password</label>
+                <input type="password" name="password" id="password" class="w-full mt-1 px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Your Instagram password" required>
+            </div>
+            <div>
+                <label for="target_id" class="block text-gray-600 font-medium">Target Instagram ID</label>
+                <input type="text" name="target_id" id="target_id" class="w-full mt-1 px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g., techthron" required>
+            </div>
+            <div>
+                <label for="num_posts" class="block text-gray-600 font-medium">Number of Posts</label>
+                <input type="number" name="num_posts" id="num_posts" class="w-full mt-1 px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Number of posts to scrape" required>
+            </div>
+            <div>
+                <label for="comments_per_post" class="block text-gray-600 font-medium">Comments per Post</label>
+                <input type="number" name="comments_per_post" id="comments_per_post" class="w-full mt-1 px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Number of comments per post" required>
+            </div>
+            <button type="submit" class="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition">
+                Start Scraping
+            </button>
+        </form>
+    </div>
 </body>
 </html>

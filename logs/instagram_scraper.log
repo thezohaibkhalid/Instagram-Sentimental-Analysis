@@ -79,3 +79,5 @@
 2024-12-25 19:57:00,590 - ERROR - Error processing request: result.html
 2024-12-25 19:57:00,591 - INFO - 127.0.0.1 - - [25/Dec/2024 19:57:00] "[32mPOST / HTTP/1.1[0m" 302 -
 2024-12-25 19:57:00,912 - INFO - 127.0.0.1 - - [25/Dec/2024 19:57:00] "GET / HTTP/1.1" 200 -
+2024-12-25 20:03:11,208 - INFO -  * Detected change in 'E:\\Part time languages\\Instagram-Sentimental-Analysis\\app.py', reloading
+2024-12-25 20:03:11,286 - INFO -  * Restarting with stat

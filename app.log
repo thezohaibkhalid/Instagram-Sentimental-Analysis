@@ -1,0 +1,62 @@
+2024-12-25 20:32:46,615 - WARNING -  * Debugger is active!
+2024-12-25 20:32:46,618 - INFO -  * Debugger PIN: 490-466-369
+2024-12-25 20:48:47,854 - INFO -  * Detected change in 'E:\\Part time languages\\Instagram-Sentimental-Analysis\\app.py', reloading
+2024-12-25 20:48:50,863 - WARNING -  * Debugger is active!
+2024-12-25 20:48:50,868 - INFO -  * Debugger PIN: 490-466-369
+2024-12-25 20:49:12,922 - INFO - 127.0.0.1 - - [25/Dec/2024 20:49:12] "GET / HTTP/1.1" 200 -
+2024-12-25 20:49:30,115 - INFO - ====== WebDriver manager ======
+2024-12-25 20:49:36,391 - INFO - Get LATEST chromedriver version for google-chrome
+2024-12-25 20:49:36,596 - INFO - Get LATEST chromedriver version for google-chrome
+2024-12-25 20:49:36,806 - INFO - Driver [C:\Users\Zohaib\.wdm\drivers\chromedriver\win64\131.0.6778.204\chromedriver-win32/chromedriver.exe] found in cache
+2024-12-25 20:50:33,863 - ERROR - Error during Instagram login: Message: 
+Stacktrace:
+	GetHandleVerifier [0x0093EC13+23731]
+	(No symbol) [0x008CC394]
+	(No symbol) [0x007ABE63]
+	(No symbol) [0x007EFCE6]
+	(No symbol) [0x007EFF2B]
+	(No symbol) [0x0082D892]
+	(No symbol) [0x00811EA4]
+	(No symbol) [0x0082B46E]
+	(No symbol) [0x00811BF6]
+	(No symbol) [0x007E3F35]
+	(No symbol) [0x007E4EBD]
+	GetHandleVerifier [0x00C1F0D3+3039603]
+	GetHandleVerifier [0x00C32DEA+3120778]
+	GetHandleVerifier [0x00C2B592+3089970]
+	GetHandleVerifier [0x009D43B0+635984]
+	(No symbol) [0x008D4DCD]
+	(No symbol) [0x008D2068]
+	(No symbol) [0x008D2205]
+	(No symbol) [0x008C4FD0]
+	BaseThreadInitThunk [0x76717BA9+25]
+	RtlInitializeExceptionChain [0x77C8C0CB+107]
+	RtlClearBits [0x77C8C04F+191]
+
+2024-12-25 20:50:34,108 - ERROR - Error during scraping: Message: 
+Stacktrace:
+	GetHandleVerifier [0x0093EC13+23731]
+	(No symbol) [0x008CC394]
+	(No symbol) [0x007ABE63]
+	(No symbol) [0x007EFCE6]
+	(No symbol) [0x007EFF2B]
+	(No symbol) [0x0082D892]
+	(No symbol) [0x00811EA4]
+	(No symbol) [0x0082B46E]
+	(No symbol) [0x00811BF6]
+	(No symbol) [0x007E3F35]
+	(No symbol) [0x007E4EBD]
+	GetHandleVerifier [0x00C1F0D3+3039603]
+	GetHandleVerifier [0x00C32DEA+3120778]
+	GetHandleVerifier [0x00C2B592+3089970]
+	GetHandleVerifier [0x009D43B0+635984]
+	(No symbol) [0x008D4DCD]
+	(No symbol) [0x008D2068]
+	(No symbol) [0x008D2205]
+	(No symbol) [0x008C4FD0]
+	BaseThreadInitThunk [0x76717BA9+25]
+	RtlInitializeExceptionChain [0x77C8C0CB+107]
+	RtlClearBits [0x77C8C04F+191]
+
+2024-12-25 20:50:36,526 - INFO - 127.0.0.1 - - [25/Dec/2024 20:50:36] "[32mPOST / HTTP/1.1[0m" 302 -
+2024-12-25 20:50:36,635 - INFO - 127.0.0.1 - - [25/Dec/2024 20:50:36] "GET /results HTTP/1.1" 200 -

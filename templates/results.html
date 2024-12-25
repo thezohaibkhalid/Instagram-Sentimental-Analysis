@@ -1,15 +1,33 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Post URLs</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scraping Results</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-    <h1>Fetched Post URLs</h1>
-    <ul>
-        {% for url in post_urls %}
-        <li><a href="{{ url }}" target="_blank">{{ url }}</a></li>
-        {% endfor %}
-    </ul>
-    <a href="/">Back</a>
+<body class="bg-gray-100 flex flex-col items-center justify-center min-h-screen">
+    <div class="bg-white p-8 rounded shadow-lg w-full max-w-4xl">
+        <h1 class="text-2xl font-bold text-gray-800 mb-6 text-center">Scraping Results</h1>
+        <div class="space-y-4 overflow-y-auto max-h-96">
+            {% if results %}
+                {% for post, comments in results.items() %}
+                <div class="bg-gray-50 p-4 rounded shadow">
+                    <h2 class="text-lg font-semibold text-gray-700">Post URL: 
+                        <a href="{{ post }}" class="text-blue-500 hover:underline" target="_blank">{{ post }}</a>
+                    </h2>
+                    <ul class="mt-2 space-y-1">
+                        {% for comment in comments %}
+                        <li class="text-gray-600">{{ comment }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endfor %}
+            {% else %}
+                <p class="text-gray-600">No results found. Please start a new scraping session.</p>
+            {% endif %}
+        </div>
+        <a href="/" class="block text-center mt-6 text-blue-500 hover:underline">Go Back</a>
+    </div>
 </body>
 </html>
