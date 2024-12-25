@@ -2,23 +2,59 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Instagram Sentiment Analysis</title>
+    <title>Instagram Comment Scraper</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f2f2f2; }
+        .container { width: 50%; margin: auto; background-color: white; padding: 20px; margin-top: 50px; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); }
+        input[type=text], input[type=number] {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0 16px 0;
+            display: inline-block;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        input[type=submit] {
+            width: 100%;
+            background-color: #3897f0;
+            color: white;
+            padding: 14px 20px;
+            margin: 8px 0;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        input[type=submit]:hover {
+            background-color: #3071d1;
+        }
+        h2 { text-align: center; }
+        .flash { padding: 10px; margin-bottom: 20px; border-radius: 4px; }
+        .flash.danger { background-color: #f8d7da; color: #721c24; }
+        .flash.warning { background-color: #fff3cd; color: #856404; }
+        .flash.success { background-color: #d4edda; color: #155724; }
+    </style>
 </head>
 <body>
-    <h1>Instagram Sentiment Analysis</h1>
-    <form action="{{ url_for('scrape') }}" method="post">
-        <label for="username">Instagram Username:</label>
-        <input type="text" id="username" name="username" required><br><br>
-        <label for="password">Instagram Password:</label>
-        <input type="password" id="password" name="password" required><br><br>
-        <label for="target_profile">Target Profile:</label>
-        <input type="text" id="target_profile" name="target_profile" required><br><br>
-        <label for="posts_count">Number of Posts to Scrape:</label>
-        <input type="number" id="posts_count" name="posts_count" value="10" required><br><br>
-        <label for="comments_count">Number of Comments per Post:</label>
-        <input type="number" id="comments_count" name="comments_count" value="10" required><br><br>
-        <button type="submit">Start Scraping</button>
-    </form>
+    <div class="container">
+        <h2>Instagram Comment Scraper</h2>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash {{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        <form method="POST">
+            <label for="post_url">Instagram Post URL:</label>
+            <input type="text" id="post_url" name="post_url" placeholder="Enter the Instagram post URL" required>
+
+            <label for="max_comments">Number of Comments to Scrape:</label>
+            <input type="number" id="max_comments" name="max_comments" min="1" max="100" value="10" required>
+
+            <input type="submit" value="Scrape Comments">
+        </form>
+    </div>
 </body>
 </html>

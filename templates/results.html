@@ -2,30 +2,42 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sentiment Analysis Results</title>
+    <title>Scraped Results</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f2f2f2; }
+        .container { width: 90%; margin: auto; background-color: white; padding: 20px; margin-top: 30px; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); }
+        .chart-container { display: flex; flex-wrap: wrap; justify-content: space-around; margin-top: 30px; }
+        .chart { width: 45%; margin-bottom: 30px; }
+        a { text-decoration: none; color: #3897f0; }
+        a:hover { text-decoration: underline; }
+        h2 { text-align: center; }
+        h3 { text-align: center; }
+    </style>
 </head>
 <body>
-    <h1>Sentiment Analysis Results</h1>
-    <h2>Sentiment Distribution</h2>
-    <img src="{{ sentiment_plot }}" alt="Sentiment Plot">
-    <h2>Top Positive Words</h2>
-    {% if positive_words_plot %}
-        <img src="{{ positive_words_plot }}" alt="Positive Words Plot">
-    {% else %}
-        <p>No positive words found.</p>
-    {% endif %}
-    <h2>Top Negative Words</h2>
-    {% if negative_words_plot %}
-        <img src="{{ negative_words_plot }}" alt="Negative Words Plot">
-    {% else %}
-        <p>No negative words found.</p>
-    {% endif %}
-    <h2>Sentiment Distribution Data</h2>
-    <pre>{{ sentiment_distribution }}</pre>
-    <h2>Top Positive Words Data</h2>
-    <pre>{{ top_positive_words }}</pre>
-    <h2>Top Negative Words Data</h2>
-    <pre>{{ top_negative_words }}</pre>
+    <div class="container">
+        <h2>Scraped Results</h2>
+        <div class="chart-container">
+            <div class="chart">
+                <h3>Sentiment Distribution</h3>
+                <img src="{{ sentiment_plot }}" alt="Sentiment Distribution">
+            </div>
+            {% if positive_words_plot %}
+                <div class="chart">
+                    <h3>Top Positive Words</h3>
+                    <img src="{{ positive_words_plot }}" alt="Top Positive Words">
+                </div>
+            {% endif %}
+            {% if negative_words_plot %}
+                <div class="chart">
+                    <h3>Top Negative Words</h3>
+                    <img src="{{ negative_words_plot }}" alt="Top Negative Words">
+                </div>
+            {% endif %}
+        </div>
+        <a href="{{ url_for('download_csv') }}">Download Comments CSV</a>
+        <br><br>
+        <a href="{{ url_for('index') }}">&#8592; Back to Home</a>
+    </div>
 </body>
 </html>

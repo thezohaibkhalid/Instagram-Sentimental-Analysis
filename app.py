@@ -1,5 +1,4 @@
 import os
-import sys
 import time
 import csv
 import emoji
@@ -7,248 +6,101 @@ import re
 import nltk
 import pandas as pd
 from flask import Flask, render_template, request, send_file, redirect, url_for, flash
-from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
-from webdriver_manager.chrome import ChromeDriverManager  # To handle chromedriver automatically
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import (
-    TimeoutException,
-    NoSuchElementException,
-    ElementClickInterceptedException,
-    StaleElementReferenceException,
-)
+from instaloader import Instaloader, Post, Profile, ConnectionException, BadResponseException
 from textblob import TextBlob
 from matplotlib import pyplot as plt
 from nltk.tokenize import word_tokenize
 import random
 import io
-from werkzeug.utils import secure_filename
+import yaml
+import logging
+
+# Set up logging
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
+    handlers=[
+        logging.FileHandler("logs/instagram_scraper.log"),
+        logging.StreamHandler()
+    ],
+)
+log = logging.getLogger(__name__)
 
 # Initialize Flask app
 app = Flask(__name__)
-app.secret_key = 'your_secret_key'  # Replace with a secure key in production
+app.secret_key = os.environ.get("FLASK_SECRET_KEY", "development_key")  # Replace with a secure key in production
 
-# Ensure NLTK data is downloaded
-nltk.download('punkt')
+# Ensure required directories exist
+os.makedirs("static", exist_ok=True)
+os.makedirs("logs", exist_ok=True)
+
+# Download required NLTK data
+nltk.download("punkt", quiet=True)
+
+# Load Instagram credentials from config.yml
+with open('config.yml') as file:
+    account = yaml.safe_load(file)
+
+# Initialize Instaloader
+L = Instaloader()
+
+# Log in to Instagram
+try:
+    L.login(account['username'], account['password'])
+    log.info("Logged in to Instagram successfully.")
+except Exception as e:
+    log.error(f"Failed to log in to Instagram: {e}")
+    raise e
 
 def random_delay(min_seconds=2, max_seconds=5):
-    """Introduces a random delay to mimic human behavior."""
+    """Introduces a random delay with jitter to mimic human behavior."""
     delay = random.uniform(min_seconds, max_seconds)
     time.sleep(delay)
 
-def login_instagram(driver, username, password):
-    """Logs into Instagram."""
+def scrape_comments(post_shortcode: str, max_comments: int = 10) -> Tuple[List[str], List[str]]:
+    """
+    Scrapes comments from an Instagram post using Instaloader.
+
+    Args:
+        post_shortcode (str): The shortcode of the Instagram post.
+        max_comments (int): Maximum number of comments to scrape.
+
+    Returns:
+        Tuple[List[str], List[str]]: Lists of usernames and their corresponding comments.
+    """
     try:
-        driver.get('https://www.instagram.com/accounts/login/')
-        # Wait until username and password fields are present
-        WebDriverWait(driver, 30).until(
-            EC.presence_of_element_located((By.NAME, "username"))
-        )
-        random_delay(2, 4)  # Additional wait to ensure page is loaded
-
-        # Enter username
-        username_field = driver.find_element(By.NAME, "username")
-        username_field.send_keys(username)
-
-        # Enter password
-        password_field = driver.find_element(By.NAME, "password")
-        password_field.send_keys(password)
-        password_field.send_keys(Keys.RETURN)
-
-        # Wait for main page to load or for any popups
-        WebDriverWait(driver, 30).until(
-            EC.presence_of_element_located((By.CSS_SELECTOR, "nav"))
-        )
-        print("Logged in successfully.")
-
-        # Handle "Save Your Login Info?" popup
-        try:
-            not_now_button = WebDriverWait(driver, 10).until(
-                EC.element_to_be_clickable((By.XPATH, "//button[contains(text(), 'Not Now')]"))
-            )
-            not_now_button.click()
-            print("Clicked 'Not Now' on save login info.")
-            random_delay(2, 4)
-        except TimeoutException:
-            print("'Save Your Login Info?' popup did not appear.")
-
-        # Handle "Turn on Notifications" popup
-        try:
-            not_now_notifications = WebDriverWait(driver, 10).until(
-                EC.element_to_be_clickable((By.XPATH, "//button[contains(text(), 'Not Now')]"))
-            )
-            not_now_notifications.click()
-            print("Clicked 'Not Now' on turn on notifications.")
-            random_delay(2, 4)
-        except TimeoutException:
-            print("'Turn on Notifications' popup did not appear.")
-
-    except TimeoutException:
-        print("Timeout while trying to log in.")
-        driver.save_screenshot("login_timeout.png")
-        with open("login_page.html", "w", encoding="utf-8") as f:
-            f.write(driver.page_source)
-        driver.quit()
-        raise Exception("Timeout while trying to log in.")
+        post = Post.from_shortcode(L.context, post_shortcode)
+        log.info(f"Scraping comments from post: {post.url}")
+        comments = post.get_comments()
+        user_names = []
+        user_comments = []
+        for comment in comments:
+            if len(user_names) >= max_comments:
+                break
+            user_names.append(comment.owner.username)
+            comment_text = comment.text.replace('\n', ' ').strip()
+            comment_text = emoji.demojize(comment_text)
+            user_comments.append(comment_text)
+        log.info(f"Scraped {len(user_names)} comments.")
+        return user_names, user_comments
     except Exception as e:
-        print(f"Error during login: {e}")
-        driver.save_screenshot("login_error.png")
-        driver.quit()
-        raise e
+        log.error(f"Error scraping comments: {e}")
+        return [], []
 
-def navigate_to_profile(driver, profile_url):
-    """Navigates to the specified Instagram profile."""
+def perform_sentiment_analysis(user_comments: List[str]) -> Dict:
+    """
+    Performs sentiment analysis on a list of comments.
+
+    Args:
+        user_comments (List[str]): List of comment texts.
+
+    Returns:
+        Dict: Sentiment analysis results and plot paths.
+    """
     try:
-        print(f"Navigating to the profile: {profile_url}")
-        driver.get(profile_url)
-        random_delay(3, 6)  # Wait for page to load
+        df = pd.DataFrame({"comment": user_comments})
 
-        # Scroll down to load posts
-        for _ in range(3):
-            driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-            random_delay(2, 4)
-
-        # Wait for posts to load using reliable selector
-        WebDriverWait(driver, 30).until(
-            EC.presence_of_element_located((By.CSS_SELECTOR, "article"))
-        )
-        print("Profile page loaded successfully.")
-
-        # Optional: Log page title and URL
-        print(f"Page Title: {driver.title}")
-        print(f"Current URL: {driver.current_url}")
-    except TimeoutException:
-        print("Timeout: Unable to load the profile page.")
-        driver.save_screenshot("profile_timeout.png")
-        with open("profile_page.html", "w", encoding="utf-8") as f:
-            f.write(driver.page_source)
-        driver.quit()
-        raise Exception("Timeout: Unable to load the profile page.")
-    except Exception as e:
-        print(f"Error navigating to profile: {e}")
-        driver.save_screenshot("profile_error.png")
-        driver.quit()
-        raise e
-
-def get_posts(driver, count=10):
-    """Retrieves the first 'count' post elements from the profile."""
-    try:
-        # Use a reliable selector to find post links
-        posts = WebDriverWait(driver, 10).until(
-            EC.presence_of_all_elements_located((By.CSS_SELECTOR, "article a[href*='/p/']"))
-        )
-        print(f"Found {len(posts)} posts.")
-        return posts[:count]
-    except TimeoutException:
-        print("Timeout: Unable to find any posts with the selector: article a[href*='/p/']")
-        driver.save_screenshot("no_posts_found.png")
-        with open("no_posts_found.html", "w", encoding="utf-8") as f:
-            f.write(driver.page_source)
-        return []
-    except Exception as e:
-        print(f"Error retrieving posts: {e}")
-        driver.save_screenshot("posts_error.png")
-        return []
-
-def load_more_comments(driver, max_loads=10):
-    """Clicks the 'Load more comments' button up to 'max_loads' times."""
-    for i in range(max_loads):
-        try:
-            load_more_button = WebDriverWait(driver, 5).until(
-                EC.element_to_be_clickable((By.XPATH, "//button[contains(text(), 'Load more comments')]"))
-            )
-            load_more_button.click()
-            print(f"Clicked 'Load more comments' button {i+1} time(s).")
-            random_delay(2, 4)  # Wait for comments to load
-        except TimeoutException:
-            print("No more 'Load more comments' button found.")
-            break
-        except Exception as e:
-            print(f"Error clicking 'Load more comments' button: {e}")
-            break
-
-def scrape_comments(driver, max_comments=10):
-    """Scrapes up to 'max_comments' comments from the currently opened Instagram post."""
-    user_names = []
-    user_comments = []
-    try:
-        # Wait until comments are loaded
-        comments_ul = WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.XPATH, "//ul[contains(@class, 'Mr508')]"))
-        )
-
-        # Load more comments if available
-        load_more_comments(driver, max_loads=10)
-
-        # Find comment elements
-        comments = comments_ul.find_elements(By.XPATH, ".//li")
-        print(f"Found {len(comments)} comments in the post.")
-
-        for comment in comments[:max_comments]:
-            try:
-                username = comment.find_element(By.XPATH, ".//a").text
-                content = comment.find_element(By.XPATH, ".//span").text
-                content = emoji.demojize(content)
-                user_names.append(username)
-                user_comments.append(content)
-            except NoSuchElementException:
-                continue
-            except Exception as e:
-                print(f"Error scraping a comment: {e}")
-                continue
-
-        print(f"Scraped {len(user_names)} comments.")
-    except TimeoutException:
-        print("Timeout: Unable to load comments for this post.")
-        driver.save_screenshot("comments_timeout.png")
-    except Exception as e:
-        print(f"Error during scraping comments: {e}")
-        driver.save_screenshot("scrape_comments_error.png")
-
-    return user_names, user_comments
-
-def scrape_comments_from_posts(driver, posts, max_comments_per_post=10):
-    """Scrapes comments from a list of post elements."""
-    all_user_names = []
-    all_user_comments = []
-    for index, post in enumerate(posts, start=1):
-        try:
-            print(f"Processing post {index}...")
-            post.click()
-            random_delay(3, 6)  # Wait for modal to open
-
-            # Scrape comments
-            user_names, user_comments = scrape_comments(driver, max_comments=max_post_comments)
-            all_user_names.extend(user_names)
-            all_user_comments.extend(user_comments)
-
-            # Close the modal
-            close_button = WebDriverWait(driver, 10).until(
-                EC.element_to_be_clickable((By.XPATH, "//div[@role='dialog']//button[contains(@class, 'wpO6b')]"))
-            )
-            close_button.click()
-            print(f"Closed post {index} modal.")
-            random_delay(2, 4)
-        except Exception as e:
-            print(f"Error processing post {index}: {e}")
-            driver.save_screenshot(f"post_{index}_error.png")
-            with open(f"post_{index}_error.html", "w", encoding="utf-8") as f:
-                f.write(driver.page_source)
-            continue
-
-    return all_user_names, all_user_comments
-
-def perform_sentiment_analysis(user_names, user_comments):
-    """Performs sentiment analysis on the scraped comments."""
-    try:
-        data = {"username": user_names, "comment": user_comments}
-        df = pd.DataFrame(data)
-
-        # Calculate sentiment polarity and subjectivity
+        # Calculate sentiment scores
         df["polarity"] = df["comment"].apply(lambda x: TextBlob(x).sentiment.polarity)
         df["subjectivity"] = df["comment"].apply(lambda x: TextBlob(x).sentiment.subjectivity)
 
@@ -275,186 +127,158 @@ def perform_sentiment_analysis(user_names, user_comments):
         positive_word_counts = pd.Series(positive_words).value_counts().head(20)
         negative_word_counts = pd.Series(negative_words).value_counts().head(20)
 
-        # Plot sentiment analysis
-        sentiment_counts = df["sentiment"].value_counts()
-        plt.figure(figsize=(8, 6))
-        sentiment_counts.plot(kind="bar", color=["red", "gray", "green"])
-        plt.title("Sentiment Analysis of Comments")
-        plt.xlabel("Sentiment")
-        plt.ylabel("Count")
-        plt.xticks(rotation=0)
-        plt.tight_layout()
-        plt.savefig("static/sentiment_plot.png")
-        plt.close()
-
-        # Plot positive words
-        if not positive_word_counts.empty:
-            plt.figure(figsize=(10, 6))
-            positive_word_counts.plot(kind="bar", color="green")
-            plt.title("Top Positive Words")
-            plt.xlabel("Words")
-            plt.ylabel("Frequency")
-            plt.xticks(rotation=45)
-            plt.tight_layout()
-            plt.savefig("static/positive_words.png")
-            plt.close()
-        else:
-            print("No positive words found.")
-
-        # Plot negative words
-        if not negative_word_counts.empty:
-            plt.figure(figsize=(10, 6))
-            negative_word_counts.plot(kind="bar", color="red")
-            plt.title("Top Negative Words")
-            plt.xlabel("Words")
-            plt.ylabel("Frequency")
-            plt.xticks(rotation=45)
-            plt.tight_layout()
-            plt.savefig("static/negative_words.png")
-            plt.close()
-        else:
-            print("No negative words found.")
-
-        # Save to CSV
-        csv_buffer = io.StringIO()
-        df.to_csv(csv_buffer, index=False)
-        csv_buffer.seek(0)
+        # Generate visualizations
+        generate_sentiment_plots(df, positive_word_counts, negative_word_counts)
 
         # Prepare sentiment distribution data
-        sentiment_distribution = sentiment_counts.to_dict()
-        top_positive = positive_word_counts.to_dict()
-        top_negative = negative_word_counts.to_dict()
+        sentiment_distribution = df["sentiment"].value_counts().to_dict()
 
         return {
-            "csv": csv_buffer,
+            "sentiment_distribution": sentiment_distribution,
             "sentiment_plot": url_for('static', filename='sentiment_plot.png'),
             "positive_words_plot": url_for('static', filename='positive_words.png') if not positive_word_counts.empty else None,
             "negative_words_plot": url_for('static', filename='negative_words.png') if not negative_word_counts.empty else None,
-            "sentiment_distribution": sentiment_distribution,
-            "top_positive_words": top_positive,
-            "top_negative_words": top_negative
         }
 
     except Exception as e:
-        print(f"Error during sentiment analysis: {e}")
-        return None
+        log.error(f"Sentiment analysis failed: {e}")
+        return {}
 
-    return None
+def generate_sentiment_plots(df: pd.DataFrame, positive_word_counts: pd.Series, negative_word_counts: pd.Series):
+    """
+    Generates sentiment analysis visualizations.
 
-def save_to_csv(user_names, user_comments, filename="comments.csv"):
-    """Saves scraped comments to a CSV file."""
-    try:
-        data = {"username": user_names, "comment": user_comments}
-        df = pd.DataFrame(data)
-        df.to_csv(filename, index=False)
-        print(f"Scraped comments saved to {filename}.")
-    except Exception as e:
-        print(f"Error saving to CSV: {e}")
+    Args:
+        df (pd.DataFrame): DataFrame containing comments and sentiment scores.
+        positive_word_counts (pd.Series): Series of positive word counts.
+        negative_word_counts (pd.Series): Series of negative word counts.
+    """
+    plt.style.use("seaborn")
 
-@app.route('/', methods=['GET'])
+    # Sentiment distribution plot
+    plt.figure(figsize=(10, 6))
+    colors = {"Positive": "#2ecc71", "Neutral": "#95a5a6", "Negative": "#e74c3c"}
+    sentiment_counts = df["sentiment"].value_counts()
+    sentiment_counts.plot(
+        kind="bar", color=[colors.get(x, "#95a5a6") for x in sentiment_counts.index]
+    )
+    plt.title("Comment Sentiment Distribution", pad=20)
+    plt.xlabel("Sentiment")
+    plt.ylabel("Count")
+    plt.xticks(rotation=0)
+    plt.tight_layout()
+    plt.savefig("static/sentiment_plot.png")
+    plt.close()
+    log.info("Generated sentiment distribution plot.")
+
+    # Positive words plot
+    if not positive_word_counts.empty:
+        plt.figure(figsize=(10, 6))
+        positive_word_counts.plot(kind="bar", color="#2ecc71")
+        plt.title("Top Positive Words", pad=20)
+        plt.xlabel("Words")
+        plt.ylabel("Frequency")
+        plt.xticks(rotation=45)
+        plt.tight_layout()
+        plt.savefig("static/positive_words.png")
+        plt.close()
+        log.info("Generated top positive words plot.")
+
+    # Negative words plot
+    if not negative_word_counts.empty:
+        plt.figure(figsize=(10, 6))
+        negative_word_counts.plot(kind="bar", color="#e74c3c")
+        plt.title("Top Negative Words", pad=20)
+        plt.xlabel("Words")
+        plt.ylabel("Frequency")
+        plt.xticks(rotation=45)
+        plt.tight_layout()
+        plt.savefig("static/negative_words.png")
+        plt.close()
+        log.info("Generated top negative words plot.")
+
+@app.route("/", methods=["GET", "POST"])
 def index():
-    """Renders the home page with the input form."""
-    return render_template('index.html')
+    """Renders the home page with the input form and handles form submission."""
+    if request.method == "POST":
+        # Get form data
+        post_url = request.form.get('post_url')
+        max_comments = int(request.form.get('max_comments', 10))
 
-@app.route('/scrape', methods=['POST'])
-def scrape():
-    """Handles the form submission, performs scraping, and returns the results."""
-    # Get form data
-    username = request.form.get('username')
-    password = request.form.get('password')
-    target_profile = request.form.get('target_profile')
-    posts_count = int(request.form.get('posts_count', 10))
-    comments_count = int(request.form.get('comments_count', 10))
-
-    if not username or not password or not target_profile:
-        flash("All fields are required.", "danger")
-        return redirect(url_for('index'))
-
-    # Initialize Chrome Options
-    options = Options()
-    # Disable headless mode for debugging; uncomment the next line to enable headless mode
-    # options.add_argument('--headless')
-    options.add_argument('--no-sandbox')
-    options.add_argument('--disable-dev-shm-usage')
-    options.add_argument('--disable-gpu')
-    options.add_argument('--start-maximized')
-    options.add_argument('--disable-infobars')
-    options.add_argument('--disable-extensions')
-
-    # Optional: Set user-agent to mimic a real browser
-    user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko)" \
-                 " Chrome/85.0.4183.102 Safari/537.36"
-    options.add_argument(f'user-agent={user_agent}')
-
-    # Initialize WebDriver using webdriver-manager
-    service = Service(ChromeDriverManager().install())
-    driver = webdriver.Chrome(service=service, options=options)
-
-    try:
-        # Step 1: Log in to Instagram
-        login_instagram(driver, username, password)
-        random_delay(3, 6)  # Wait after login
-
-        # Step 2: Navigate to the target profile
-        target_profile_url = f"https://www.instagram.com/{target_profile}/"
-        navigate_to_profile(driver, target_profile_url)
-        random_delay(3, 6)  # Wait after navigation
-
-        # Step 3: Get posts
-        posts = get_posts(driver, count=posts_count)
-        if not posts:
-            flash("No posts found to scrape.", "warning")
+        # Input validation
+        if not post_url:
+            flash("Post URL is required.", "danger")
             return redirect(url_for('index'))
 
-        # Step 4: Scrape comments from posts
-        global max_post_comments
-        max_post_comments = comments_count  # Set globally for scrape_comments_from_posts
-        all_user_names, all_user_comments = scrape_comments_from_posts(driver, posts, max_comments_per_post=comments_count)
-        if not all_user_names or not all_user_comments:
+        # Extract post shortcode from URL
+        try:
+            parsed_url = urllib.parse.urlparse(post_url)
+            path_parts = parsed_url.path.strip('/').split('/')
+            if len(path_parts) < 2 or path_parts[0] != 'p':
+                flash("Invalid Instagram post URL.", "danger")
+                return redirect(url_for('index'))
+            post_shortcode = path_parts[1]
+        except Exception as e:
+            log.error(f"Error parsing post URL: {e}")
+            flash("Invalid Instagram post URL format.", "danger")
+            return redirect(url_for('index'))
+
+        # Scrape comments
+        user_names, user_comments = scrape_comments(post_shortcode, max_comments)
+
+        if not user_names or not user_comments:
             flash("No comments scraped.", "warning")
             return redirect(url_for('index'))
 
-        # Step 5 & 6: Perform sentiment analysis and generate results
-        sentiment_results = perform_sentiment_analysis(all_user_names, all_user_comments)
-        if sentiment_results is None:
+        # Export to CSV
+        try:
+            df = pd.DataFrame({
+                'Username': user_names,
+                'Comment': user_comments
+            })
+            csv_path = os.path.join("static", "comments.csv")
+            df.to_csv(csv_path, index=False)
+            log.info(f"Exported comments to {csv_path}")
+        except Exception as e:
+            log.error(f"Failed to export comments to CSV: {e}")
+            flash("Failed to export comments to CSV.", "danger")
+            return redirect(url_for('index'))
+
+        # Perform sentiment analysis
+        sentiment_results = perform_sentiment_analysis(user_comments)
+
+        if not sentiment_results:
             flash("Error during sentiment analysis.", "danger")
             return redirect(url_for('index'))
 
-        # Prepare CSV file
-        csv_data = sentiment_results["csv"].getvalue()
-        csv_file = io.BytesIO()
-        csv_file.write(csv_data.encode('utf-8'))
-        csv_file.seek(0)
-
-        # Render results on a new page
+        # Render results
         return render_template('results.html',
                                sentiment_plot=sentiment_results["sentiment_plot"],
-                               positive_words_plot=sentiment_results["positive_words_plot"],
-                               negative_words_plot=sentiment_results["negative_words_plot"],
+                               positive_words_plot=sentiment_results.get("positive_words_plot"),
+                               negative_words_plot=sentiment_results.get("negative_words_plot"),
                                sentiment_distribution=sentiment_results["sentiment_distribution"],
-                               top_positive_words=sentiment_results["top_positive_words"],
-                               top_negative_words=sentiment_results["top_negative_words"],
                                )
 
-    except Exception as e:
-        print(f"Error in scraping process: {e}")
-        flash(f"An error occurred: {e}", "danger")
-        return redirect(url_for('index'))
-    finally:
-        driver.quit()
+    return render_template("index.html")
 
 @app.route('/download_csv')
 def download_csv():
     """Provides the CSV file for download."""
     try:
-        return send_file('comments_with_sentiment.csv',
-                         mimetype='text/csv',
-                         attachment_filename='comments_with_sentiment.csv',
-                         as_attachment=True)
+        csv_path = 'static/comments.csv'
+        if os.path.exists(csv_path):
+            return send_file(csv_path,
+                             mimetype='text/csv',
+                             attachment_filename='comments.csv',
+                             as_attachment=True)
+        else:
+            flash("CSV file not found.", "warning")
+            return redirect(url_for('index'))
     except Exception as e:
+        log.error(f"Error downloading CSV: {e}")
         flash(f"Error downloading CSV: {e}", "danger")
         return redirect(url_for('index'))
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # Run the Flask app
-    app.run(debug=True)
+    app.run(debug=False)

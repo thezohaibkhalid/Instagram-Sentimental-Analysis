@@ -1,0 +1,40 @@
+2024-12-25 16:46:26,676 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2024-12-25 16:46:26,677 - INFO - [33mPress CTRL+C to quit[0m
+2024-12-25 16:46:41,169 - INFO - 127.0.0.1 - - [25/Dec/2024 16:46:41] "GET / HTTP/1.1" 200 -
+2024-12-25 16:46:53,191 - INFO - 127.0.0.1 - - [25/Dec/2024 16:46:53] "GET / HTTP/1.1" 200 -
+2024-12-25 16:47:06,187 - INFO - 127.0.0.1 - - [25/Dec/2024 16:47:06] "[32mPOST / HTTP/1.1[0m" 302 -
+2024-12-25 16:48:09,665 - ERROR - Failed to log into Instagram
+2024-12-25 16:48:35,703 - INFO - Captured screenshot: logs/login_failed_screenshot_20241225-164809.png and HTML: logs/login_failed_page_20241225-164809.html
+2024-12-25 16:48:35,704 - ERROR - Error during Instagram login: Login verification failed
+2024-12-25 16:48:38,055 - INFO - Captured screenshot: logs/login_error_screenshot_20241225-164835.png and HTML: logs/login_error_page_20241225-164835.html
+2024-12-25 16:48:38,067 - ERROR - Scraping failed: Login verification failed
+2024-12-25 16:48:38,476 - INFO - 127.0.0.1 - - [25/Dec/2024 16:48:38] "[32mGET /scrape?username=techthron&password=11aa22aa33aa&target_profile=therock&posts_count=4&comments_count=10 HTTP/1.1[0m" 302 -
+2024-12-25 16:48:38,490 - INFO - 127.0.0.1 - - [25/Dec/2024 16:48:38] "GET / HTTP/1.1" 200 -
+2024-12-25 18:18:16,325 - INFO - 127.0.0.1 - - [25/Dec/2024 18:18:16] "GET / HTTP/1.1" 200 -
+2024-12-25 18:18:35,318 - INFO - 127.0.0.1 - - [25/Dec/2024 18:18:35] "[32mPOST / HTTP/1.1[0m" 302 -
+2024-12-25 18:18:59,157 - ERROR - Failed to log into Instagram
+2024-12-25 18:19:07,197 - INFO - Captured screenshot: logs/login_failed_screenshot_20241225-181859.png and HTML: logs/login_failed_page_20241225-181859.html
+2024-12-25 18:19:07,198 - ERROR - Error during Instagram login: Login verification failed
+2024-12-25 18:19:09,168 - INFO - Captured screenshot: logs/login_error_screenshot_20241225-181907.png and HTML: logs/login_error_page_20241225-181907.html
+2024-12-25 18:19:09,169 - ERROR - Scraping failed: Login verification failed
+2024-12-25 18:19:09,489 - INFO - 127.0.0.1 - - [25/Dec/2024 18:19:09] "[32mGET /scrape?username=techthron&password=11aa22aa33aa&target_profile=therock&posts_count=2&comments_count=10 HTTP/1.1[0m" 302 -
+2024-12-25 18:19:09,761 - INFO - 127.0.0.1 - - [25/Dec/2024 18:19:09] "GET / HTTP/1.1" 200 -
+2024-12-25 19:12:51,645 - INFO - 127.0.0.1 - - [25/Dec/2024 19:12:51] "GET / HTTP/1.1" 200 -
+2024-12-25 19:12:52,623 - INFO - 127.0.0.1 - - [25/Dec/2024 19:12:52] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2024-12-25 19:13:05,793 - INFO - 127.0.0.1 - - [25/Dec/2024 19:13:05] "[32mPOST / HTTP/1.1[0m" 302 -
+2024-12-25 19:13:31,368 - ERROR - Failed to log into Instagram
+2024-12-25 19:13:39,514 - INFO - Captured screenshot: logs/login_failed_screenshot_20241225-191331.png and HTML: logs/login_failed_page_20241225-191331.html
+2024-12-25 19:13:39,515 - ERROR - Error during Instagram login: Login verification failed
+2024-12-25 19:13:41,071 - INFO - Captured screenshot: logs/login_error_screenshot_20241225-191339.png and HTML: logs/login_error_page_20241225-191339.html
+2024-12-25 19:13:41,072 - ERROR - Scraping failed: Login verification failed
+2024-12-25 19:13:41,291 - INFO - 127.0.0.1 - - [25/Dec/2024 19:13:41] "[32mGET /scrape?username=techthron&password=11aa22aa33aa&target_profile=therock&posts_count=2&comments_count=10 HTTP/1.1[0m" 302 -
+2024-12-25 19:13:41,314 - INFO - 127.0.0.1 - - [25/Dec/2024 19:13:41] "GET / HTTP/1.1" 200 -
+2024-12-25 19:14:54,327 - INFO - 127.0.0.1 - - [25/Dec/2024 19:14:54] "[32mPOST / HTTP/1.1[0m" 302 -
+2024-12-25 19:15:17,219 - ERROR - Failed to log into Instagram
+2024-12-25 19:15:18,410 - INFO - Captured screenshot: logs/login_failed_screenshot_20241225-191517.png and HTML: logs/login_failed_page_20241225-191517.html
+2024-12-25 19:15:18,411 - ERROR - Error during Instagram login: Login verification failed
+2024-12-25 19:15:31,961 - INFO - Captured screenshot: logs/login_error_screenshot_20241225-191518.png and HTML: logs/login_error_page_20241225-191518.html
+2024-12-25 19:15:31,963 - ERROR - Scraping failed: Login verification failed
+2024-12-25 19:15:32,277 - INFO - 127.0.0.1 - - [25/Dec/2024 19:15:32] "[32mGET /scrape?username=techthron&password=11aa22aa33aa&target_profile=therock&posts_count=10&comments_count=10 HTTP/1.1[0m" 302 -
+2024-12-25 19:15:32,592 - INFO - 127.0.0.1 - - [25/Dec/2024 19:15:32] "GET / HTTP/1.1" 200 -

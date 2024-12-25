@@ -1,8 +1,7 @@
-Flask==2.2.5
-selenium==4.10.0
-webdriver-manager==3.8.6
-pandas==1.5.3
-textblob==0.17.1
-matplotlib==3.7.2
-emoji==2.4.1
-nltk==3.8.1
+Flask
+instaloader
+pandas
+textblob
+matplotlib
+nltk
+emoji
