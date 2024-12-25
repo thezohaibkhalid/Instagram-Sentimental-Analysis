@@ -38,3 +38,44 @@
 2024-12-25 19:15:31,963 - ERROR - Scraping failed: Login verification failed
 2024-12-25 19:15:32,277 - INFO - 127.0.0.1 - - [25/Dec/2024 19:15:32] "[32mGET /scrape?username=techthron&password=11aa22aa33aa&target_profile=therock&posts_count=10&comments_count=10 HTTP/1.1[0m" 302 -
 2024-12-25 19:15:32,592 - INFO - 127.0.0.1 - - [25/Dec/2024 19:15:32] "GET / HTTP/1.1" 200 -
+2024-12-25 19:34:32,381 - INFO - Logged in to Instagram successfully.
+2024-12-25 19:39:55,126 - INFO - Logged in to Instagram successfully.
+2024-12-25 19:39:55,186 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2024-12-25 19:39:55,187 - INFO - [33mPress CTRL+C to quit[0m
+2024-12-25 19:39:55,192 - INFO -  * Restarting with stat
+2024-12-25 19:40:05,792 - INFO - Logged in to Instagram successfully.
+2024-12-25 19:40:05,829 - WARNING -  * Debugger is active!
+2024-12-25 19:40:05,837 - INFO -  * Debugger PIN: 490-466-369
+2024-12-25 19:40:05,957 - INFO - 127.0.0.1 - - [25/Dec/2024 19:40:05] "GET / HTTP/1.1" 200 -
+2024-12-25 19:42:15,345 - INFO - 127.0.0.1 - - [25/Dec/2024 19:42:15] "[32mPOST / HTTP/1.1[0m" 302 -
+2024-12-25 19:42:15,601 - INFO - 127.0.0.1 - - [25/Dec/2024 19:42:15] "GET / HTTP/1.1" 200 -
+2024-12-25 19:42:58,164 - INFO - 127.0.0.1 - - [25/Dec/2024 19:42:58] "GET / HTTP/1.1" 200 -
+2024-12-25 19:43:02,969 - INFO - 127.0.0.1 - - [25/Dec/2024 19:43:02] "[32mPOST / HTTP/1.1[0m" 302 -
+2024-12-25 19:43:02,986 - INFO - 127.0.0.1 - - [25/Dec/2024 19:43:02] "GET / HTTP/1.1" 200 -
+2024-12-25 19:45:57,245 - INFO -  * Detected change in 'E:\\Part time languages\\Instagram-Sentimental-Analysis\\app.py', reloading
+2024-12-25 19:45:57,533 - INFO -  * Restarting with stat
+2024-12-25 19:46:06,942 - INFO - Logged in to Instagram successfully.
+2024-12-25 19:46:06,967 - WARNING -  * Debugger is active!
+2024-12-25 19:46:06,973 - INFO -  * Debugger PIN: 490-466-369
+2024-12-25 19:46:07,059 - INFO - 127.0.0.1 - - [25/Dec/2024 19:46:07] "GET / HTTP/1.1" 200 -
+2024-12-25 19:46:15,318 - ERROR - Error processing form: Invalid Instagram post URL format.
+2024-12-25 19:46:15,321 - INFO - 127.0.0.1 - - [25/Dec/2024 19:46:15] "[32mPOST / HTTP/1.1[0m" 302 -
+2024-12-25 19:46:15,332 - INFO - 127.0.0.1 - - [25/Dec/2024 19:46:15] "GET / HTTP/1.1" 200 -
+2024-12-25 19:55:43,447 - INFO -  * Detected change in 'E:\\Part time languages\\Instagram-Sentimental-Analysis\\app.py', reloading
+2024-12-25 19:55:43,758 - INFO -  * Restarting with stat
+2024-12-25 19:55:45,020 - WARNING -  * Debugger is active!
+2024-12-25 19:55:45,024 - INFO -  * Debugger PIN: 490-466-369
+2024-12-25 19:56:19,128 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2024-12-25 19:56:19,129 - INFO - [33mPress CTRL+C to quit[0m
+2024-12-25 19:56:19,133 - INFO -  * Restarting with stat
+2024-12-25 19:56:19,960 - WARNING -  * Debugger is active!
+2024-12-25 19:56:19,963 - INFO -  * Debugger PIN: 490-466-369
+2024-12-25 19:56:31,779 - INFO - 127.0.0.1 - - [25/Dec/2024 19:56:31] "GET / HTTP/1.1" 200 -
+2024-12-25 19:56:55,653 - INFO - Logged in successfully.
+2024-12-25 19:56:59,123 - INFO - Fetching posts for therock
+2024-12-25 19:57:00,590 - INFO - Fetched 10 post URLs.
+2024-12-25 19:57:00,590 - ERROR - Error processing request: result.html
+2024-12-25 19:57:00,591 - INFO - 127.0.0.1 - - [25/Dec/2024 19:57:00] "[32mPOST / HTTP/1.1[0m" 302 -
+2024-12-25 19:57:00,912 - INFO - 127.0.0.1 - - [25/Dec/2024 19:57:00] "GET / HTTP/1.1" 200 -
