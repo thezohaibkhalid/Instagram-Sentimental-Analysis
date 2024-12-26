@@ -102,6 +102,32 @@ def scrape_comments(driver, post_url, max_comments):
         driver.save_screenshot("comments_error.png")
     return comments[:max_comments]
 
+# Function to get post links
+def get_post_links(driver, target_id, num_posts):
+    driver.get(f"https://www.instagram.com/{target_id}/")
+    WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.TAG_NAME, "article")))
+    random_delay()
+
+    post_links = set()
+    scrolls = 0
+    max_scrolls = 10  # Prevent infinite scrolling
+
+    while len(post_links) < num_posts and scrolls < max_scrolls:
+        posts = driver.find_elements(By.XPATH, "//a[contains(@href, '/p/')]")
+        for post in posts:
+            href = post.get_attribute("href")
+            if href not in post_links:
+                post_links.add(href)
+                logging.info(f"Found post: {href}")
+                if len(post_links) >= num_posts:
+                    break
+        driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+        random_delay(2, 4)
+        scrolls += 1
+        logging.info(f"Scroll attempt {scrolls}/{max_scrolls}")
+
+    return list(post_links)[:num_posts]
+
 # Scrape Instagram posts and their comments
 def scrape_instagram_posts(username, password, target_id, num_posts, comments_per_post):
     driver = get_webdriver()
@@ -128,32 +154,6 @@ def scrape_instagram_posts(username, password, target_id, num_posts, comments_pe
         return {}
     finally:
         driver.quit()
-
-# Function to get post links
-def get_post_links(driver, target_id, num_posts):
-    driver.get(f"https://www.instagram.com/{target_id}/")
-    WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.TAG_NAME, "article")))
-    random_delay()
-
-    post_links = set()
-    scrolls = 0
-    max_scrolls = 10  # Prevent infinite scrolling
-
-    while len(post_links) < num_posts and scrolls < max_scrolls:
-        posts = driver.find_elements(By.XPATH, "//a[contains(@href, '/p/')]")
-        for post in posts:
-            href = post.get_attribute("href")
-            if href not in post_links:
-                post_links.add(href)
-                logging.info(f"Found post: {href}")
-                if len(post_links) >= num_posts:
-                    break
-        driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-        random_delay(2, 4)
-        scrolls += 1
-        logging.info(f"Scroll attempt {scrolls}/{max_scrolls}")
-
-    return list(post_links)[:num_posts]
 
 @app.route("/", methods=["GET", "POST"])
 def index():

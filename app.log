@@ -60,3 +60,5 @@ Stacktrace:
 
 2024-12-25 20:50:36,526 - INFO - 127.0.0.1 - - [25/Dec/2024 20:50:36] "[32mPOST / HTTP/1.1[0m" 302 -
 2024-12-25 20:50:36,635 - INFO - 127.0.0.1 - - [25/Dec/2024 20:50:36] "GET /results HTTP/1.1" 200 -
+2024-12-25 20:51:43,153 - INFO - 127.0.0.1 - - [25/Dec/2024 20:51:43] "GET / HTTP/1.1" 200 -
+2024-12-26 23:39:09,407 - INFO -  * Detected change in 'E:\\Part time languages\\Instagram-Sentimental-Analysis\\app.py', reloading
