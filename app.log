@@ -64,3 +64,16 @@ Stacktrace:
 2024-12-26 23:39:09,407 - INFO -  * Detected change in 'E:\\Part time languages\\Instagram-Sentimental-Analysis\\app.py', reloading
 2024-12-26 23:39:18,185 - WARNING -  * Debugger is active!
 2024-12-26 23:39:18,191 - INFO -  * Debugger PIN: 490-466-369
+2024-12-27 16:42:00,620 - INFO -  * Detected change in 'E:\\Part time languages\\Instagram-Sentimental-Analysis\\app.py', reloading
+2024-12-27 16:42:03,302 - WARNING -  * Debugger is active!
+2024-12-27 16:42:03,308 - INFO -  * Debugger PIN: 490-466-369
+2024-12-27 16:47:18,201 - INFO - 127.0.0.1 - - [27/Dec/2024 16:47:18] "GET / HTTP/1.1" 200 -
+2024-12-27 16:47:28,329 - INFO - 127.0.0.1 - - [27/Dec/2024 16:47:28] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2024-12-27 16:48:30,833 - INFO - ====== WebDriver manager ======
+2024-12-27 16:48:36,833 - INFO - Get LATEST chromedriver version for google-chrome
+2024-12-27 16:48:49,178 - INFO - 127.0.0.1 - - [27/Dec/2024 16:48:49] "[35m[1mPOST / HTTP/1.1[0m" 500 -
+2024-12-27 16:48:49,413 - INFO - 127.0.0.1 - - [27/Dec/2024 16:48:49] "GET /?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1" 200 -
+2024-12-27 16:48:49,673 - INFO - 127.0.0.1 - - [27/Dec/2024 16:48:49] "GET /?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1" 200 -
+2024-12-27 16:48:50,246 - INFO - 127.0.0.1 - - [27/Dec/2024 16:48:50] "GET /?__debugger__=yes&cmd=resource&f=console.png&s=4ObKlT7ZkfwCNp1qpuS8 HTTP/1.1" 200 -
+2024-12-27 16:48:50,467 - INFO - 127.0.0.1 - - [27/Dec/2024 16:48:50] "GET /?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+2024-12-27 16:49:01,240 - INFO -  * Detected change in 'E:\\Part time languages\\Instagram-Sentimental-Analysis\\app.py', reloading
